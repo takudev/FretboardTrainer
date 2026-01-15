@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="screen-orientation" content="landscape">
+    <meta name="description"
+        content="Guitar Fretboard Trainer - Learn guitar fretboard positions with interactive games and references">
+    <title>Guitar Fretboard Trainer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Hamburger Menu Button -->
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Left Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">🎸</span>
+            <span class="sidebar-title">Fretboard Trainer</span>
+        </div>
+        <div class="sidebar-links">
+            <a href="#/" class="sidebar-link" data-nav>
+                <span class="sidebar-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="#/reference" class="sidebar-link" data-nav>
+                <span class="sidebar-icon">📚</span>
+                <span>Reference</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main id="app" class="app-container">
+        <!-- Content will be rendered here by JavaScript -->
+    </main>
+
+    <script src="same-note-finder.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
