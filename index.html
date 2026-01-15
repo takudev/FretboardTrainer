@@ -4,52 +4,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="screen-orientation" content="landscape">
-    <meta name="description"
-        content="Guitar Fretboard Trainer - Learn guitar fretboard positions with interactive games and references">
     <title>Guitar Fretboard Trainer</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <!-- Hamburger Menu Button -->
-    <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle Menu">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-    </button>
-
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-    <!-- Left Sidebar Navigation -->
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <span class="sidebar-logo">🎸</span>
-            <span class="sidebar-title">Fretboard Trainer</span>
+    <div id="landscape-warning">
+        <div class="message">
+            Please rotate your device to landscape mode appropriate for the fretboard experience.
         </div>
-        <div class="sidebar-links">
-            <a href="#/" class="sidebar-link" data-nav>
-                <span class="sidebar-icon">🏠</span>
-                <span>Home</span>
-            </a>
-            <a href="#/reference" class="sidebar-link" data-nav>
-                <span class="sidebar-icon">📚</span>
-                <span>Reference</span>
-            </a>
+    </div>
+
+    <div id="app-container">
+        <!-- Navigation -->
+        <nav id="sidebar">
+            <div class="nav-header">
+                <h2>Fretboard Trainer</h2>
+                <button id="close-nav" class="icon-btn">&times;</button>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" data-page="home" class="active">Home</a></li>
+                <li><a href="#" data-page="game-same-note">Same Note Finder</a></li>
+                <li><a href="#" data-page="game-guess-note">Guess The Note</a></li>
+                <li><a href="#" data-page="reference">Reference</a></li>
+            </ul>
+        </nav>
+
+        <!-- Toggle Button for Nav (Visible when nav is closed) -->
+        <button id="open-nav" class="icon-btn hamburger">&#9776;</button>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Dynamic Content will be injected here -->
+            <div id="page-content"></div>
+        </main>
+    </div>
+
+    <!-- Templates -->
+
+    <!-- Home Template -->
+    <template id="tmpl-home">
+        <div class="home-container">
+            <h1>Welcome to Fretboard Trainer</h1>
+            <div class="menu-grid">
+                <div class="card" data-link="game-same-note">
+                    <h3>Same Note Finder</h3>
+                    <p>Find all the same notes on the fretboard.</p>
+                </div>
+                <div class="card" data-link="game-guess-note">
+                    <h3>Guess The Note</h3>
+                    <p>Identify the note name. (Under Construction)</p>
+                </div>
+                <div class="card" data-link="reference">
+                    <h3>Reference</h3>
+                    <p>Learning materials and charts.</p>
+                </div>
+            </div>
         </div>
-    </nav>
+    </template>
 
-    <!-- Main Content Container -->
-    <main id="app" class="app-container">
-        <!-- Content will be rendered here by JavaScript -->
-    </main>
+    <!-- Same Note Finder Game Template -->
+    <template id="tmpl-game-same-note">
+        <div class="game-container">
+            <div class="game-header">
+                <h2>Same Note Finder</h2>
+                <div class="game-stats">
+                    <span id="score-display">Score: 0/0</span>
+                    <span id="timer-display">Time: 0.00</span>
+                </div>
+                <button id="btn-start-game" class="btn-primary">Start Game</button>
+                <button id="btn-settings" class="btn-secondary">Settings</button>
+            </div>
 
-    <script src="same-note-finder.js"></script>
-    <script src="app.js"></script>
+            <div id="settings-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h3>Settings</h3>
+                    <label>
+                        Number of Questions: <input type="number" id="setting-questions" value="10" min="1" max="50">
+                    </label>
+                    <label>
+                        Wait Time (sec): <input type="number" id="setting-timer" value="10" min="3" max="60">
+                    </label>
+                    <button id="btn-save-settings" class="btn-primary">Save & Close</button>
+                </div>
+            </div>
+
+            <div class="fretboard-wrapper">
+                <div id="fretboard" class="fretboard"></div>
+            </div>
+
+            <div id="result-overlay" class="overlay hidden">
+                <div class="overlay-content">
+                    <h3>Game Over</h3>
+                    <p>Score: <span id="res-score"></span></p>
+                    <p>Avg Time: <span id="res-time"></span>s</p>
+                    <p>Grade: <span id="res-grade"></span></p>
+                    <button id="btn-retry" class="btn-primary">Retry</button>
+                    <button id="btn-home" class="btn-secondary">Home</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Reference Template -->
+    <template id="tmpl-reference">
+        <div class="reference-container">
+            <h2>Reference</h2>
+            <div class="list-group">
+                <div class="list-item" data-link="ref-chord-formulas">
+                    <h3>Chord Formulas</h3>
+                    <p>Under Construction</p>
+                </div>
+                <div class="list-item" data-link="ref-note-map">
+                    <h3>Fretboard Note Map</h3>
+                    <p>Under Construction</p>
+                </div>
+                <div class="list-item" data-link="ref-diatonic">
+                    <h3>Diatonic Chord (5th String)</h3>
+                    <p>Under Construction</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/fretboard.js"></script>
+    <script src="js/same-note-finder.js"></script>
+    <script src="js/app.js"></script>
 </body>
 
 </html>

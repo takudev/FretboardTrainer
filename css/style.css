@@ -1,0 +1,428 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --primary-color: #d35400;
+    /* Burnt Orange for guitar vibe */
+    --secondary-color: #7f8c8d;
+    --fretboard-color: #e3bc9a;
+    /* Light wood/skin tone */
+    --fret-wire-color: #95a5a6;
+    --string-color: #555;
+    --highlight-color: #3498db;
+    --correct-color: #2ecc71;
+    --wrong-color: #e74c3c;
+    --sidebar-width: 250px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    /* Prevent body scroll, handle inside containers */
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Landscape Warning - Show only on portrait */
+#landscape-warning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #2c3e50;
+    color: white;
+    z-index: 9999;
+    display: none;
+    /* Default hidden */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+@media (orientation: portrait) {
+    #landscape-warning {
+        display: flex;
+    }
+}
+
+/* Layout */
+#app-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+/* Sidebar */
+#sidebar {
+    width: var(--sidebar-width);
+    background: #2c3e50;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    position: fixed;
+    height: 100%;
+    z-index: 100;
+}
+
+#sidebar.closed {
+    transform: translateX(-100%);
+}
+
+.nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.nav-links {
+    list-style: none;
+}
+
+.nav-links li {
+    margin-bottom: 1rem;
+}
+
+.nav-links a {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: block;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#open-nav {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 50;
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+}
+
+/* Main Content */
+#main-content {
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+    padding: 1rem;
+    margin-left: var(--sidebar-width);
+    /* Push content when sidebar is open */
+    transition: margin-left 0.3s ease;
+}
+
+#sidebar.closed~#main-content {
+    margin-left: 0;
+}
+
+/* Home Screen */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 900px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+/* Game Styles */
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 1rem;
+}
+
+.fretboard-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: auto;
+    /* Allow scroll if needed on very small screens, though we try to fit */
+    background: #fff;
+    padding: 1rem;
+}
+
+/* Fretboard Rendering */
+.fretboard {
+    display: grid;
+    /* 12 columns for frets 0-11 */
+    grid-template-columns: 40px repeat(12, 1fr);
+    /* 6 strings + top/bottom markers */
+    grid-template-rows: repeat(6, 40px);
+    background: var(--fretboard-color);
+    border: 2px solid #5d4037;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    width: 100%;
+    max-width: 1200px;
+    /* Limit width */
+    position: relative;
+    padding-bottom: 20px;
+    /* For bottom fret numbers */
+}
+
+/* Fret Wires (Right border of cells) */
+.string-cell {
+    position: relative;
+    border-right: 4px solid var(--fret-wire-color);
+    /* Fret wire */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.string-cell.fret-0 {
+    border-right: 8px solid #ecf0f1;
+    /* Nut */
+    background: #fff;
+    /* Nut area is usually not part of the wood */
+}
+
+/* Strings */
+.string-line {
+    position: absolute;
+    width: 100%;
+    background: var(--string-color);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    /* Click goes to cell */
+    z-index: 1;
+}
+
+/* String Sizes */
+.string-6 .string-line {
+    height: 4px;
+}
+
+.string-5 .string-line {
+    height: 3.5px;
+}
+
+.string-4 .string-line {
+    height: 3px;
+}
+
+.string-3 .string-line {
+    height: 2.5px;
+}
+
+.string-2 .string-line {
+    height: 2px;
+}
+
+.string-1 .string-line {
+    height: 1.5px;
+}
+
+/* Note Markers (Dots) */
+.note-marker {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: transparent;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+    opacity: 0;
+    transition: all 0.2s;
+}
+
+.string-cell.active .note-marker {
+    opacity: 1;
+    background: var(--highlight-color);
+}
+
+.string-cell.correct .note-marker {
+    opacity: 1;
+    background: var(--correct-color);
+}
+
+.string-cell.wrong .note-marker {
+    opacity: 1;
+    background: var(--wrong-color);
+}
+
+.string-cell.target-hidden .note-marker {
+    opacity: 1;
+    background: #e67e22;
+    /* Question mark color */
+    color: transparent;
+    /* Hide note name */
+}
+
+.string-cell.target-revealed .note-marker {
+    opacity: 1;
+    background: #e67e22;
+}
+
+
+/* Markers on Fretboard (3, 5, 7, 9, 12) */
+.fret-marker {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: #555;
+    pointer-events: none;
+}
+
+/* Single dots */
+.inlay-dot {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    pointer-events: none;
+    /* Centered in the fret column, vertically centered or spaced */
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Modals */
+.modal,
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.modal.hidden,
+.overlay.hidden {
+    display: none;
+}
+
+.modal-content,
+.overlay-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 300px;
+}
+
+.modal-content label {
+    display: block;
+    margin: 1rem 0;
+}
+
+/* Mobile Tweaks */
+@media (max-width: 768px) {
+    :root {
+        --sidebar-width: 200px;
+    }
+
+    #sidebar {
+        transform: translateX(-100%);
+        /* Closed by default on mobile */
+    }
+
+    #sidebar.open {
+        transform: translateX(0);
+    }
+
+    #main-content {
+        margin-left: 0;
+        /* Always 0 on mobile */
+    }
+
+    #sidebar:not(.open)~#open-nav {
+        display: block;
+    }
+}
