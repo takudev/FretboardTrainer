@@ -255,6 +255,13 @@ class SameNoteFinderUI {
                                     <option value="30">30s</option>
                                 </select>
                             </div>
+                            <div class="config-item">
+                                <label for="fret-range">Fret Range:</label>
+                                <select id="fret-range">
+                                    <option value="11" selected>11 Frets</option>
+                                    <option value="12">12 Frets</option>
+                                </select>
+                            </div>
                         </div>
                         <button class="game-button primary" id="start-game" style="margin-top: 1rem;">Start Game</button>
                     </div>
@@ -521,6 +528,8 @@ class SameNoteFinderUI {
     startGame() {
         const questionCount = parseInt(document.getElementById('question-count').value);
         const timeLimit = parseInt(document.getElementById('time-limit').value) * 1000;
+        const fretRange = parseInt(document.getElementById('fret-range').value);
+        this.game.totalFrets = fretRange;
         this.game.start(timeLimit, questionCount);
         this.render();
     }
