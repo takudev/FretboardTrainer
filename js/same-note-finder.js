@@ -16,6 +16,7 @@ class SameNoteFinderGame {
         this.targetNote = null;
         this.requiredPositions = [];
         this.foundPositions = new Set();
+        this.wrongPositions = new Set(); // Track wrong taps
 
         // Settings
         this.settings = {
@@ -28,11 +29,15 @@ class SameNoteFinderGame {
         this.elTimer = document.getElementById('timer-display');
         this.elResult = document.getElementById('result-overlay');
 
+        // No message overlay as per new spec
+        // this.elMessage = document.getElementById('message-overlay');
+
         this.fretboard.render(); // Draw the fretboard
     }
 
     start() {
         this.isPlaying = true;
+        this.isWaiting = false; // Block input during result view
         this.currentQuestion = 0;
         this.score = 0;
         this.totalTime = 0;
@@ -63,6 +68,7 @@ class SameNoteFinderGame {
         }
 
         this.currentQuestion++;
+        this.isWaiting = false;
         this.updateStats();
 
         // Pick Random Note (String 1-6, Fret 0-12)
@@ -93,6 +99,7 @@ class SameNoteFinderGame {
         const allPos = getAllPositions(note);
         this.requiredPositions = allPos;
         this.foundPositions = new Set();
+        this.wrongPositions = new Set();
 
         // Mark the Question Instance as "Target Hidden"
         // And treat it as "Found" automatically? Or user must click?
@@ -102,12 +109,14 @@ class SameNoteFinderGame {
         // Or cleaner: The clue is just a visual prompt. User must click all valid spots.
         // "All places" usually includes the place itself in set theory, but in UI...
         // Let's assume the user has to identify the note first.
-        // I'll auto-add the Question Source to foundPositions to be friendly.
-
+        // Mark the Question Instance as "Target Hidden"
+        // User must click ALL instances, including this one.
         const qKey = `${rString}-${rFret}`;
-        this.foundPositions.add(qKey);
+        // this.foundPositions.add(qKey); // Removed: force user to tap target too
 
         this.fretboard.clearMarks();
+
+        // Mark the Question Instance as "Target Hidden"
         this.fretboard.markNote(rString, rFret, 'target-hidden');
 
         // Start Timer
@@ -126,75 +135,89 @@ class SameNoteFinderGame {
     }
 
     handleBoardClick(data) {
-        if (!this.isPlaying) return;
+        if (!this.isPlaying || this.isWaiting) return;
 
         const { string, fret, note } = data;
         const key = `${string}-${fret}`;
 
-        // Ignore if already found
-        if (this.foundPositions.has(key)) return;
+        // Ignore if already found or wrong
+        if (this.foundPositions.has(key) || this.wrongPositions.has(key)) return;
 
         if (note === this.targetNote) {
-            // Correct
-            this.fretboard.markNote(string, fret, 'correct');
+            // Correct -> Highlight with NO text (tapped-hidden)
+            this.fretboard.markNote(string, fret, 'tapped-hidden');
             this.foundPositions.add(key);
 
-            // Check Win
+            // Check if ALL are found
             if (this.foundPositions.size === this.requiredPositions.length) {
                 this.handleRoundWin();
             }
         } else {
-            // Wrong
+            // Wrong -> Highlight wrong
             this.fretboard.markNote(string, fret, 'wrong');
-            // Optional: Penalize? 
+            this.wrongPositions.add(key);
+            // Spec does not strictly say to end immediately, but usually wrong note = fail or just mark.
+            // Spec says "If time exceeded OR all spots NOT tapped".
+            // It doesn't say "If wrong spot tapped". 
+            // So we just mark it wrong and let user continue until all found or time out.
         }
     }
 
     handleRoundWin() {
         this.clearTimers();
+        this.isWaiting = true;
+
         const timeTaken = Date.now() - this.roundStartTime;
         this.totalTime += timeTaken;
         this.score++;
 
-        // Reveal the hidden target too (change style to revealed)
-        // Find the initial question mark (the one that was target-hidden) and make it revealed
-        // Actually, since we found all, they are all green now.
-        // But the initial one might still be 'target-hidden'. 
-        // Let's just repaint all required as correct.
+        // Reveal All Correct Notes
         this.requiredPositions.forEach(p => {
+            // Simplest: `revealNote` helper removes hidden class.
+            this.fretboard.revealNote(p.string, p.fret);
+            // And ensures it is green/correct
             this.fretboard.markNote(p.string, p.fret, 'correct');
         });
 
+        // Wait 5s then Next (No message)
         setTimeout(() => {
             this.nextQuestion();
-        }, 1000); // 1s pause
+        }, 5000);
     }
 
     handleTimeout() {
         this.clearTimers();
+        this.isWaiting = true;
         this.updateTimerDisplay(0);
 
-        // Show correct answers
+        // Show correct answers (Incorrect/Timeout)
         this.requiredPositions.forEach(p => {
-            // Apply 'active' or 'target-revealed' if not found
-            const key = `${p.string}-${p.fret}`;
-            if (!this.foundPositions.has(key)) {
-                this.fretboard.revealNote(p.string, p.fret); // Reveal note name
-                this.fretboard.markNote(p.string, p.fret, 'target-revealed');
-            }
+            // Reveal note name
+            this.fretboard.revealNote(p.string, p.fret);
+            // Mark correct (make them green)
+            this.fretboard.markNote(p.string, p.fret, 'correct');
         });
 
-        // Wait longer so user can see
+        // Wait 5s then Next (No message)
         setTimeout(() => {
             this.nextQuestion();
-        }, 2000);
+        }, 5000);
     }
 
     endGame() {
         this.isPlaying = false;
+        this.isWaiting = false;
 
-        const avgTime = this.totalTime > 0 ? (this.totalTime / this.settings.questions) : 0;
-        const avgTimeDisplay = formatTime(avgTime);
+        const avgTime = this.totalTime > 0 ? (this.totalTime / this.score) : 0; // Avg of correct answers usually? Or total rounds?
+        // Spec says "Average Answer Time". Usually TotalTime / CorrectCount or TotalTime / TotalQuestions?
+        // Let's use TotalTime / CorrectCount if score > 0, else 0.
+        // Or TotalTime / Questions. 
+        // "回答時間" implies successful answer time.
+        // Let's use TotalTime / Score for now. Capture only successful times? 
+        // Actually I added time only on Win. So TotalTime is sum of winning times.
+        const effectiveAvg = this.score > 0 ? (this.totalTime / this.score) : 0;
+
+        const avgTimeDisplay = formatTime(effectiveAvg);
 
         document.getElementById('res-score').textContent = `${this.score} / ${this.settings.questions}`;
         document.getElementById('res-time').textContent = avgTimeDisplay;

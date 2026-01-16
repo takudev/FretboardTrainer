@@ -33,6 +33,9 @@
         <!-- Toggle Button for Nav (Visible when nav is closed) -->
         <button id="open-nav" class="icon-btn hamburger">&#9776;</button>
 
+        <!-- Sidebar Overlay (for closing) -->
+        <div id="sidebar-overlay"></div>
+
         <!-- Main Content -->
         <main id="main-content">
             <!-- Dynamic Content will be injected here -->
@@ -101,6 +104,13 @@
                     <p>Grade: <span id="res-grade"></span></p>
                     <button id="btn-retry" class="btn-primary">Retry</button>
                     <button id="btn-home" class="btn-secondary">Home</button>
+                </div>
+            </div>
+
+            <div id="message-overlay" class="overlay hidden">
+                <div class="overlay-content">
+                    <h3 id="msg-title"></h3>
+                    <p id="msg-text"></p>
                 </div>
             </div>
         </div>

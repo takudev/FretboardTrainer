@@ -10,43 +10,37 @@ class Fretboard {
 
     render() {
         this.container.innerHTML = '';
+        this.cells.clear();
 
-        // Fret Numbers (Top)
-        // Can be added via CSS or logical rows.
-        // Current Grid: columns = 40px (Note names) + 12 (Frets)
+        // Grid definition: 
+        // Rows: [Top Numbers] [String 1] [String 2] [String 3] [String 4] [String 5] [String 6] [Bottom Numbers] - Total 8 rows
+        // Columns: [String Labels] [Fret 0] [Fret 1] ... [Fret 11] - Total 13 columns
 
-        // Render Strings (6 to 1)
-        // We iterate STRINGS which are ordered 1 to 6 in the array?
-        // STRINGS is [1 (high E)... 6 (low E)]
-        // The display wants 6 at bottom, 1 at top.
-        // So simple iteration works if CSS order matches or we simply render top-down.
-        // Usually tab/fretboard diagrams have High E at top.
+        // 1. Fret Numbers (Top & Bottom)
+        for (let fret = 0; fret <= MAX_FRETS; fret++) {
+            // Top
+            this._addFretNumber(fret, 1);
+            // Bottom
+            this._addFretNumber(fret, 8);
+        }
 
-        // Let's verify spec: "6弦から1弦まで表示（6弦が一番下）" -> 6th string at bottom.
-        // So visually:
-        // 1 (High E)
-        // ...
-        // 6 (Low E)
-
-        // My STRINGS array has 1 first. So iterating them naturally puts 1 at top.
-
-        STRINGS.forEach((stringData, strIndex) => {
+        // 2. Strings (1 to 6)
+        // Spec: "6th string at bottom" (line 68)
+        // STRINGS array: [1 (High E), 2, 3, 4, 5, 6 (Low E)]
+        // We render STRINGS[0] at Row 2, STRINGS[1] at Row 3... STRINGS[5] at Row 7
+        STRINGS.forEach((stringData, index) => {
             const stringNum = stringData.id;
+            const row = index + 2; // Row 1 is Top Numbers
 
-            // Note Label (Left column)
-            // Ideally we show the open note name
+            // String Name Label
             const label = document.createElement('div');
             label.className = 'string-label';
             label.textContent = stringData.openNote;
-            label.style.gridRow = strIndex + 1;
+            label.style.gridRow = row;
             label.style.gridColumn = 1;
-            label.style.display = 'flex';
-            label.style.alignItems = 'center';
-            label.style.justifyContent = 'center';
-            label.style.fontWeight = 'bold';
             this.container.appendChild(label);
 
-            // Frets 0 to 12
+            // Frets
             for (let fret = 0; fret <= MAX_FRETS; fret++) {
                 const cell = document.createElement('div');
                 cell.className = `string-cell string-${stringNum} fret-${fret}`;
@@ -54,9 +48,8 @@ class Fretboard {
                 cell.dataset.fret = fret;
                 cell.dataset.note = getNoteAt(stringData.openNote, fret);
 
-                // Grid Position
-                cell.style.gridRow = strIndex + 1;
-                cell.style.gridColumn = fret + 2; // +1 for label, +1 for 0-index adjustment? fret 0 is col 2
+                cell.style.gridRow = row;
+                cell.style.gridColumn = fret + 2;
 
                 // String Line
                 const line = document.createElement('div');
@@ -86,51 +79,36 @@ class Fretboard {
             }
         });
 
-        // Add Inlay Dots (Background decoration)
-        // 3, 5, 7, 9 -> Single
-        // 12 -> Double
-        const inlays = [3, 5, 7, 9, 12];
-        inlays.forEach(fret => {
-            if (fret === 12) {
-                this._addInlay(fret, 2); // roughly string 2
-                this._addInlay(fret, 5); // roughly string 5
-            } else {
-                this._addInlay(fret, 3.5); // between 3 and 4
+        // 3. Inlay Dots
+        // Single dots at 3, 5, 7, 9
+        // Double dots at 12 (but we only show up to 11 in this mode, if 12 is included might need it)
+        // Wait, spec says 0 to 11. If 12 is needed I'll adjust.
+        // Usually dots are between frets or on the fretboard wood.
+        // We'll place them as background elements for the grid.
+        [3, 5, 7, 9].forEach(fret => {
+            if (fret <= MAX_FRETS) {
+                this._addInlay(fret);
             }
         });
-
-        // Fret Numbers at Bottom
-        for (let fret = 0; fret <= MAX_FRETS; fret++) {
-            const num = document.createElement('div');
-            num.className = 'fret-number';
-            num.textContent = fret;
-            num.style.gridColumn = fret + 2;
-            num.style.textAlign = 'center';
-            num.style.marginTop = '4px';
-            num.style.fontSize = '0.8rem';
-            num.style.color = '#555';
-            // Position after the last row
-            num.style.gridRow = 7;
-            this.container.appendChild(num);
-        }
     }
 
-    _addInlay(fret, stringPos) {
+    _addFretNumber(fret, row) {
+        const num = document.createElement('div');
+        num.className = 'fret-number';
+        num.textContent = fret === 0 ? 'Nut' : fret;
+        num.style.gridRow = row;
+        num.style.gridColumn = fret + 2;
+        this.container.appendChild(num);
+    }
+
+    _addInlay(fret) {
+        // Place a dot in the middle of the fretboard (between strings 3 and 4)
         const dot = document.createElement('div');
         dot.className = 'inlay-dot';
-        // Position
-        // Grid Row is roughly stringPos.
-        // Note: CSS Grid Placement uses simple integers.
-        // We can use absolute positioning relative to container or a separate overlay layer.
-        // For simplicity, let's append to specific cells or use 'grid-area'.
-
-        // Actually, easiest is to append to the 0th row or similar, but absolutely position it.
-        // But since fretboard is relative, let's just make a 'decoration' layer if needed.
-        // Simple hack: put it in a cell on the middle string and offset it?
-        // No, let's skip complex visual inlays for this MVP version to ensure stability,
-        // or just add a class to the cell that should contain it.
-
-        // Alternate Strategy: Add a marker to the cell at string 3 or 4 for single dots.
+        dot.style.gridRow = 'span 6 / 8'; // Span strings 1-6 area
+        dot.style.gridColumn = fret + 2;
+        // In CSS we will center it
+        this.container.appendChild(dot);
     }
 
     clearMarks() {
@@ -152,7 +130,7 @@ class Fretboard {
     revealNote(string, fret) {
         const cell = this.cells.get(`${string}-${fret}`);
         if (cell) {
-            cell.classList.remove('target-hidden');
+            cell.classList.remove('target-hidden', 'tapped-hidden');
             cell.classList.add('target-revealed');
         }
     }

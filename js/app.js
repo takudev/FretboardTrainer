@@ -5,6 +5,7 @@ class App {
         this.sidebar = document.getElementById('sidebar');
         this.openNavBtn = document.getElementById('open-nav');
         this.closeNavBtn = document.getElementById('close-nav');
+        this.sidebarOverlay = document.getElementById('sidebar-overlay');
 
         this.currentGame = null; // Store active game instance
 
@@ -14,12 +15,14 @@ class App {
     init() {
         // Nav Events
         this.openNavBtn.addEventListener('click', () => {
-            this.sidebar.classList.remove('closed');
             this.sidebar.classList.add('open');
         });
 
         this.closeNavBtn.addEventListener('click', () => {
-            this.sidebar.classList.add('closed');
+            this.sidebar.classList.remove('open');
+        });
+
+        this.sidebarOverlay.addEventListener('click', () => {
             this.sidebar.classList.remove('open');
         });
 
@@ -29,11 +32,8 @@ class App {
                 const page = link.dataset.page;
                 this.navigate(page);
 
-                // On mobile, close sidebar after click
-                if (window.innerWidth <= 768) {
-                    this.sidebar.classList.add('closed');
-                    this.sidebar.classList.remove('open');
-                }
+                // Close sidebar after click
+                this.sidebar.classList.remove('open');
             });
         });
 
