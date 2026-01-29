@@ -589,3 +589,51 @@ body {
         display: block;
     }
 }
+
+/* Note List for Guess The Note */
+.note-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.note-btn {
+    min-width: 50px;
+    padding: 0.8rem 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #fff, #ecf0f1);
+    border: 2px solid #bdc3c7;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.note-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(211, 84, 0, 0.2);
+}
+
+.note-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.note-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.note-btn.selected {
+    background: linear-gradient(135deg, var(--primary-color), #e67e22);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(211, 84, 0, 0.3);
+}

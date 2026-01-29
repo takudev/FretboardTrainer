@@ -56,7 +56,7 @@
                 </div>
                 <div class="card" data-link="game-guess-note">
                     <h3>Guess The Note</h3>
-                    <p>Identify the note name. (Under Construction)</p>
+                    <p>Identify the note name from the fretboard.</p>
                 </div>
                 <div class="card" data-link="reference">
                     <h3>Reference</h3>
@@ -72,6 +72,7 @@
             <div class="game-header">
                 <h2>Same Note Finder</h2>
                 <div class="game-stats">
+                    <span id="progress-display">Question: 0/0</span>
                     <span id="score-display">Score: 0/0</span>
                     <span id="timer-display">Time: 0.00</span>
                 </div>
@@ -116,6 +117,50 @@
         </div>
     </template>
 
+    <!-- Guess The Note Game Template -->
+    <template id="tmpl-game-guess-note">
+        <div class="game-container">
+            <div class="game-header">
+                <h2>Guess The Note</h2>
+                <div class="game-stats">
+                    <span id="gtn-progress-display">Question: 0/0</span>
+                    <span id="gtn-score-display">Score: 0/0</span>
+                    <span id="gtn-timer-display">Time: 0.00</span>
+                </div>
+                <button id="gtn-btn-start-game" class="btn-primary">Start Game</button>
+                <button id="gtn-btn-settings" class="btn-secondary">Settings</button>
+            </div>
+
+            <div id="gtn-settings-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h3>Settings</h3>
+                    <label>
+                        Number of Questions: <input type="number" id="gtn-setting-questions" value="10" min="1"
+                            max="50">
+                    </label>
+                    <button id="gtn-btn-save-settings" class="btn-primary">Save & Close</button>
+                </div>
+            </div>
+
+            <div class="fretboard-wrapper">
+                <div id="gtn-fretboard" class="fretboard"></div>
+            </div>
+
+            <div id="gtn-note-list" class="note-list"></div>
+
+            <div id="gtn-result-overlay" class="overlay hidden">
+                <div class="overlay-content">
+                    <h3>Game Over</h3>
+                    <p>Score: <span id="gtn-res-score"></span></p>
+                    <p>Avg Time: <span id="gtn-res-time"></span>s</p>
+                    <p>Grade: <span id="gtn-res-grade"></span></p>
+                    <button id="gtn-btn-retry" class="btn-primary">Retry</button>
+                    <button id="gtn-btn-home" class="btn-secondary">Home</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <!-- Reference Template -->
     <template id="tmpl-reference">
         <div class="reference-container">
@@ -141,6 +186,7 @@
     <script src="js/utils.js"></script>
     <script src="js/fretboard.js"></script>
     <script src="js/same-note-finder.js"></script>
+    <script src="js/guess-note.js"></script>
     <script src="js/app.js"></script>
 </body>
 

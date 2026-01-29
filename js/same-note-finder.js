@@ -16,7 +16,7 @@ class SameNoteFinderGame {
         this.targetNote = null;
         this.requiredPositions = [];
         this.foundPositions = new Set();
-        this.wrongPositions = new Set(); // Track wrong taps
+        this.tappedPositions = new Set(); // Track all tapped positions
 
         // Settings
         this.settings = {
@@ -25,6 +25,7 @@ class SameNoteFinderGame {
         };
 
         // DOM Elements
+        this.elProgress = document.getElementById('progress-display');
         this.elScore = document.getElementById('score-display');
         this.elTimer = document.getElementById('timer-display');
         this.elResult = document.getElementById('result-overlay');
@@ -99,7 +100,7 @@ class SameNoteFinderGame {
         const allPos = getAllPositions(note);
         this.requiredPositions = allPos;
         this.foundPositions = new Set();
-        this.wrongPositions = new Set();
+        this.tappedPositions = new Set();
 
         // Mark the Question Instance as "Target Hidden"
         // And treat it as "Found" automatically? Or user must click?
@@ -140,27 +141,29 @@ class SameNoteFinderGame {
         const { string, fret, note } = data;
         const key = `${string}-${fret}`;
 
-        // Ignore if already found or wrong
-        if (this.foundPositions.has(key) || this.wrongPositions.has(key)) return;
+        // Toggle selection: if already tapped, untap (spec: 同じ箇所をタップした場合、選択状態を解除できる)
+        if (this.tappedPositions.has(key)) {
+            this.fretboard.unmarkNote(string, fret);
+            this.tappedPositions.delete(key);
+            if (note === this.targetNote) {
+                this.foundPositions.delete(key);
+            }
+            return;
+        }
+
+        // Mark as tapped (no success/failure display per spec: 成否も表示しない)
+        this.fretboard.markNote(string, fret, 'tapped-hidden');
+        this.tappedPositions.add(key);
 
         if (note === this.targetNote) {
-            // Correct -> Highlight with NO text (tapped-hidden)
-            this.fretboard.markNote(string, fret, 'tapped-hidden');
             this.foundPositions.add(key);
 
-            // Check if ALL are found
+            // Check if ALL correct positions are found
             if (this.foundPositions.size === this.requiredPositions.length) {
                 this.handleRoundWin();
             }
-        } else {
-            // Wrong -> Highlight wrong
-            this.fretboard.markNote(string, fret, 'wrong');
-            this.wrongPositions.add(key);
-            // Spec does not strictly say to end immediately, but usually wrong note = fail or just mark.
-            // Spec says "If time exceeded OR all spots NOT tapped".
-            // It doesn't say "If wrong spot tapped". 
-            // So we just mark it wrong and let user continue until all found or time out.
         }
+        // Wrong taps are just highlighted without showing success/failure
     }
 
     handleRoundWin() {
@@ -235,7 +238,8 @@ class SameNoteFinderGame {
     }
 
     updateStats() {
-        this.elScore.textContent = `Score: ${this.score} / ${this.settings.questions}`;
+        this.elProgress.textContent = `Question: ${this.currentQuestion} / ${this.settings.questions}`;
+        this.elScore.textContent = `Score: ${this.score}`;
     }
 
     updateTimerDisplay(ms) {

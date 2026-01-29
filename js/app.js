@@ -88,6 +88,9 @@ class App {
         else if (pageId === 'game-same-note') {
             this.initSameNoteGame();
         }
+        else if (pageId === 'game-guess-note') {
+            this.initGuessNoteGame();
+        }
         else if (pageId === 'reference') {
             // Bind ref links
             const items = this.appContainer.querySelectorAll('.list-item');
@@ -134,6 +137,39 @@ class App {
         });
 
         document.getElementById('btn-home').addEventListener('click', () => {
+            this.navigate('home');
+        });
+    }
+
+    initGuessNoteGame() {
+        const board = document.getElementById('gtn-fretboard');
+        const noteList = document.getElementById('gtn-note-list');
+        const game = new GuessNoteGame(board, noteList);
+        this.currentGame = game;
+
+        // Start Button
+        document.getElementById('gtn-btn-start-game').addEventListener('click', () => {
+            game.start();
+        });
+
+        // Settings Modal
+        const modal = document.getElementById('gtn-settings-modal');
+        document.getElementById('gtn-btn-settings').addEventListener('click', () => {
+            modal.classList.remove('hidden');
+        });
+
+        document.getElementById('gtn-btn-save-settings').addEventListener('click', () => {
+            const q = parseInt(document.getElementById('gtn-setting-questions').value, 10);
+            game.updateSettings(q);
+            modal.classList.add('hidden');
+        });
+
+        // Result Overlay
+        document.getElementById('gtn-btn-retry').addEventListener('click', () => {
+            game.start();
+        });
+
+        document.getElementById('gtn-btn-home').addEventListener('click', () => {
             this.navigate('home');
         });
     }

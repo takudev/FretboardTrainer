@@ -113,10 +113,7 @@ class Fretboard {
 
     clearMarks() {
         this.cells.forEach(cell => {
-            cell.classList.remove('active', 'correct', 'wrong', 'target-hidden', 'target-revealed');
-            // Remove text content hide overrides
-            // const marker = cell.querySelector('.note-marker');
-            // marker.style.color = '';
+            cell.classList.remove('active', 'correct', 'wrong', 'target-hidden', 'target-revealed', 'tapped-hidden');
         });
     }
 
@@ -124,6 +121,13 @@ class Fretboard {
         const cell = this.cells.get(`${string}-${fret}`);
         if (cell) {
             cell.classList.add(type);
+        }
+    }
+
+    unmarkNote(string, fret) {
+        const cell = this.cells.get(`${string}-${fret}`);
+        if (cell) {
+            cell.classList.remove('active', 'correct', 'wrong', 'target-hidden', 'target-revealed', 'tapped-hidden');
         }
     }
 
