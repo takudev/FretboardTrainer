@@ -595,10 +595,54 @@ body {
     #main-content {
         margin-left: 0;
         /* Always 0 on mobile */
+        padding: 0.5rem;
+        /* Reduced padding */
     }
 
     #sidebar:not(.open)~#open-nav {
         display: block;
+        top: 0.5rem;
+        left: 0.5rem;
+        padding: 0.2rem 0.4rem;
+        font-size: 1.2rem;
+    }
+
+    /* Compact Game Header on Mobile */
+    .game-header {
+        padding: 0.2rem 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .game-header h2 {
+        display: none;
+        /* Hide title on mobile to save space */
+    }
+
+    .game-stats {
+        gap: 0.5rem;
+    }
+
+    .game-stats span {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    /* Compact Note List */
+    .note-list {
+        padding: 0.2rem;
+        gap: 0.2rem;
+    }
+
+    .note-btn {
+        min-width: 35px;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.9rem;
     }
 }
 
