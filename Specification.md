@@ -35,6 +35,7 @@
 |Guess The Note|ランダムにポイントされた指板の音名を充てるゲーム|
 |Reference|様々な参考資料へのリンクをまとめたランディングページ|
 |Chord Formulas|和音の公式をまとめたページ|
+|Chord Dictionary|様々な和音の押さえ方をまとめたページ|
 |Fretboard Note Map|指板の音をまとめたページ|
 |Diatonic Chord (5th String)|Cメジャースケールのダイアトニックコードをまとめたページ。5弦をルートとした押さえ方で表現する|
 
@@ -45,6 +46,7 @@ Home
 ├── Guess The Note
 ├── Reference
     ├── Chord Formulas
+    ├── Chord Dictionary
     ├── Fretboard Note Map
     ├── Diatonic Chord (5th String)
 </pre>
@@ -120,7 +122,12 @@ Home
 - Chord Formulas, Fretboard Note Map, Diatonic Chord (5th String)の3つの画面へ誘導する
 
 #### Chord Formulas
-- 実装中の文言を表示
+- https://docs.google.com/spreadsheets/d/15peJC7w_jhZ935oq1jTtHYaHPOj1gtEbgMkTWSP4XGs/edit?usp=drive_link
+- 上記の内容をウェブページとして表示する
+
+#### Chord Dictionary
+- https://docs.google.com/spreadsheets/d/1A1TosoPI_PX6efnzpwr40W-minNWmPJr18DsSCDJgD8/edit?usp=drive_link
+- 上記の内容をウェブページとして表示する
 
 #### Fretboard Note Map
 - 実装中の文言を表示

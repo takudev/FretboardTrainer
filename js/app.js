@@ -92,16 +92,26 @@ class App {
             this.initGuessNoteGame();
         }
         else if (pageId === 'reference') {
-            // Bind ref links
+            // Bind ref links to navigate
             const items = this.appContainer.querySelectorAll('.list-item');
             items.forEach(i => {
                 i.addEventListener('click', () => {
-                    // Just show "Under Construction" for now as per spec
-                    // Or navigate to a detail view if I had templates.
-                    // Spec says distinct pages, but "Under Construction".
-                    // I'll just use a generic placeholder for them.
-                    alert(`Navigate to: ${i.dataset.link} (Under Construction)`);
+                    this.navigate(i.dataset.link);
                 });
+            });
+        }
+        else if (pageId === 'ref-chord-formulas') {
+            const page = document.getElementById('chord-formulas-page');
+            renderChordFormulas(page);
+            document.getElementById('cf-btn-back').addEventListener('click', () => {
+                this.navigate('reference');
+            });
+        }
+        else if (pageId === 'ref-chord-dictionary') {
+            const page = document.getElementById('chord-dictionary-page');
+            renderChordDictionary(page);
+            document.getElementById('cd-btn-back').addEventListener('click', () => {
+                this.navigate('reference');
             });
         }
     }
